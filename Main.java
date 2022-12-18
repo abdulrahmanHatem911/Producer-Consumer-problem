@@ -1,30 +1,38 @@
 import java.util.Random;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.Semaphore;
 
 class Buffer {
     private final BlockingQueue<Integer> queue;
-    private final Semaphore semaphore;
+    private final Object lock1 = new Object();
+    private final Object lock2 = new Object();
 
     public Buffer(int size) {
         queue = new ArrayBlockingQueue<>(size);
-        semaphore = new Semaphore(1);
     }
 
     public void add(int item) throws InterruptedException {
-        semaphore.acquire();
-        queue.put(item);
-        semaphore.release();
+        synchronized (lock1) {
+            while (queue.size() == queue.remainingCapacity()) {
+                lock1.wait();
+            }
+            queue.put(item);
+            lock2.notifyAll();
+        }
     }
 
     public int remove() throws InterruptedException {
-        semaphore.acquire();
-        int item = queue.take();
-        semaphore.release();
-        return item;
+        synchronized (lock2) {
+            while (queue.size() == 0) {
+                lock2.wait();
+            }
+            int item = queue.take();
+            lock1.notifyAll();
+            return item;
+        }
     }
 }
+
 class Producer implements Runnable {
     private final Buffer buffer;
 
@@ -45,7 +53,6 @@ class Producer implements Runnable {
             }
         }
     }
-
     private int generateItem() {
         // generate a random integer between 0 and 100
         return new Random().nextInt(101);
@@ -65,7 +72,7 @@ class Consumer implements Runnable {
             try {
                 int item = buffer.remove();
                 System.out.println("Consumed " + item);
-                Thread.sleep(2000);
+                Thread.sleep(1000);
             } catch (InterruptedException e) {
                 break;
             }
@@ -80,6 +87,5 @@ public class Main {
         Thread consumerThread = new Thread(new Consumer(buffer));
         producerThread.start();
         consumerThread.start();
-
     }
 }

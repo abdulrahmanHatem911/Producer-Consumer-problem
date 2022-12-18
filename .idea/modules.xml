@@ -5,6 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/ProducerAndConsumer.iml" filepath="$PROJECT_DIR$/ProducerAndConsumer.iml" />
       <module fileurl="file://$PROJECT_DIR$/Real_Wolrd/Real_Wolrd.iml" filepath="$PROJECT_DIR$/Real_Wolrd/Real_Wolrd.iml" />
       <module fileurl="file://$PROJECT_DIR$/_2 Producer_and_consumer/_2 Producer_and_consumer.iml" filepath="$PROJECT_DIR$/_2 Producer_and_consumer/_2 Producer_and_consumer.iml" />
+      <module fileurl="file://$PROJECT_DIR$/_3 Starvition_problem/_3 Starvition_problem.iml" filepath="$PROJECT_DIR$/_3 Starvition_problem/_3 Starvition_problem.iml" />
     </modules>
   </component>
 </project>

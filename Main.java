@@ -4,29 +4,30 @@ import java.util.concurrent.BlockingQueue;
 
 class Buffer {
     private final BlockingQueue<Integer> queue;
-    private final Object lock = new Object();
+    private final Object lock1 = new Object();
+    private final Object lock2 = new Object();
 
     public Buffer(int size) {
         queue = new ArrayBlockingQueue<>(size);
     }
 
     public void add(int item) throws InterruptedException {
-        synchronized (lock) {
+        synchronized (lock1) {
             while (queue.size() == queue.remainingCapacity()) {
-                lock.wait();
+                lock1.wait();
             }
             queue.put(item);
-            lock.notifyAll();
+            lock2.notifyAll();
         }
     }
 
     public int remove() throws InterruptedException {
-        synchronized (lock) {
+        synchronized (lock2) {
             while (queue.size() == 0) {
-                lock.wait();
+                lock2.wait();
             }
             int item = queue.take();
-            lock.notifyAll();
+            lock1.notifyAll();
             return item;
         }
     }
